@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # @date 2019-02-28
 # @brief Short script to automatically change all commit names and email addresses to anonymize git repos
 # @details 
@@ -24,20 +24,27 @@ if [ $# -le 2 ]; then
 	exit 1
 fi
 
-git filter-branch --env-filter '
+# defaults
+# From: https://stackoverflow.com/a/46471405/1267320
+OLD_EMAIL=${1:-"you_wrong_mail@hello.world"}
+CORRECT_NAME=${2:-"your name"}
+CORRECT_EMAIL=${3:-"new_mail@hello.world"}
 
-OLD_EMAIL=$1
-CORRECT_NAME=$2
-CORRECT_EMAIL=$3
+echo "Old mail: $OLD_EMAIL"
+echo "New name: $CORRECT_NAME"
+echo "New mail: $CORRECT_EMAIL"
+echo "Starting conversion in 1 sec..."
+sleep 1
 
-if [ "$GIT_COMMITTER_EMAIL" = "$OLD_EMAIL" ]
+git filter-branch --env-filter "
+if [ \$GIT_COMMITTER_EMAIL = '$OLD_EMAIL' ]
 then
-    export GIT_COMMITTER_NAME="$CORRECT_NAME"
-    export GIT_COMMITTER_EMAIL="$CORRECT_EMAIL"
+    export GIT_COMMITTER_NAME='$CORRECT_NAME'
+    export GIT_COMMITTER_EMAIL='$CORRECT_EMAIL'
 fi
-if [ "$GIT_AUTHOR_EMAIL" = "$OLD_EMAIL" ]
+if [ \$GIT_AUTHOR_EMAIL = '$OLD_EMAIL' ]
 then
-    export GIT_AUTHOR_NAME="$CORRECT_NAME"
-    export GIT_AUTHOR_EMAIL="$CORRECT_EMAIL"
+    export GIT_AUTHOR_NAME='$CORRECT_NAME'
+    export GIT_AUTHOR_EMAIL='$CORRECT_EMAIL'
 fi
-' --tag-name-filter cat -- --branches --tags
+" --tag-name-filter cat -- --branches --tags
