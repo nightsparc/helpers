@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # @date 2019-02-28
 # @brief Short script to automatically change all commit names and email addresses to anonymize git repos
 # @details 
