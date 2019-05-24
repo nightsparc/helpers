@@ -1,0 +1,1 @@
+../../xorg/z27-hidpi-dualmonitor.sh
