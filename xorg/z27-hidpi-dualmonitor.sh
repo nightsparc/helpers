@@ -20,4 +20,4 @@
 # - https://www.valhalla.fr/2018/07/14/hidpi-on-gnome-desktop/
 # - https://blog.summercat.com/configuring-mixed-dpi-monitors-with-xrandr.html
 
-xrandr --dpi 163 --fb 9600x2700 --output DP-2 --mode 3840x2160 --scale 1.25x1.25 --panning 4800x2700+0+0 --output DP-4 --mode 3840x2160 --scale 1.25x1.25 --panning 4800x2700+4800+0
+xrandr --dpi 163 --fb 9600x2700 --output DP-2 --mode 3840x2160 --scale 1.25x1.25 --panning 4800x2700+0+0 --primary --output DP-0 --mode 3840x2160 --scale 1.25x1.25 --panning 4800x2700+4800+0
