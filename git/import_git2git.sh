@@ -6,9 +6,9 @@
 ## Reference: http://gbayer.com/development/moving-files-from-one-git-repository-to-another-preserving-history/
 ##
 
-REPO_A="<git repo A url>"
-REPO_A_DIR="<directory 1>"
-REPO_B="<git repo B url>"
+REPO_A="$1"
+REPO_A_DIR=$2
+REPO_B="$3"
 
 # Prep Repo A
 git clone $REPO_A repoA
