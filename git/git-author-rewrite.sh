@@ -1,7 +1,7 @@
 #!/bin/bash
 # @date 2019-02-28
 # @brief Short script to automatically change all commit names and email addresses to anonymize git repos
-# @details 
+# @details
 # Usage: ./git-author-rewrite.sh old-email new-name new-email
 # @see Based on: https://help.github.com/articles/changing-author-info/
 
@@ -10,7 +10,7 @@ showUsage() {
     echo ""
     echo -e "Usage: $0 [OLD-EMAIL] [NEW-NAME] [NEW-EMAIL]"
     echo ""
-    echo -e "Atomatically change all commit names and email addresses to anonymize git repos."
+    echo -e "Automatically change all commit names and email addresses to anonymize git repos."
     echo ""
     echo "OLD-EMAIL:  The email-address to be removed."
     echo "NEW-NAME:   The new name/ID for the commits after anonymization."
