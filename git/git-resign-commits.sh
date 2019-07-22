@@ -12,7 +12,7 @@ showUsage() {
 }
 
 # If not enough parameters are given, show help
-if [[ $# <= 2 ]]; then
+if [ $# le 2 ]; then
     echo "Not enough arguments given..."
 	showUsage
 	exit 1
@@ -23,10 +23,10 @@ fi
 EMAIL2RESIGN=${1:-"you_wrong_mail@hello.world"}
 
 echo "Resigning commits for $EMAIL2RESIGN with configured GPG signing key."
-echo "Starting resigning in 2 sec..."
-sleep 2
+echo "Starting resigning in 1 sec..."
+sleep 1
 
-git filter-branch --commit-filter 'if [ "$GIT_COMMITTER_EMAIL" = "$EMAIL2RESIGN" ];
+git filter-branch --commit-filter 'if [ "$GIT_COMMITTER_EMAIL" = '$EMAIL2RESIGN' ];
   then git commit-tree -S "$@";
   else git commit-tree "$@";
   fi' HEAD
