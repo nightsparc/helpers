@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # @brief Short script to resign all commits in the repository for a given E-Mail address.
 
 # @function Show the usage of the script
@@ -12,7 +12,7 @@ showUsage() {
 }
 
 # If not enough parameters are given, show help
-if [ $# le 2 ]; then
+if [ $# -le 2 ]; then
     echo "Not enough arguments given..."
 	showUsage
 	exit 1
