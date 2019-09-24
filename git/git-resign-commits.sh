@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # @brief Short script to resign all commits in the repository for a given E-Mail address.
 
 # @function Show the usage of the script
