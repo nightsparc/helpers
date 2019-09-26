@@ -11,8 +11,10 @@ showUsage() {
     echo "EMAIL-TO-RESIGN:  The E-Mail address of the commits to be resigned."
 }
 
+echo "Num args: $#"
+
 # If not enough parameters are given, show help
-if [ $# -le 2 ]; then
+if [ "$#" -lt "1" ]; then
     echo "Not enough arguments given..."
 	showUsage
 	exit 1
@@ -30,3 +32,5 @@ git filter-branch --commit-filter 'if [ "$GIT_COMMITTER_EMAIL" = '$EMAIL2RESIGN'
   then git commit-tree -S "$@";
   else git commit-tree "$@";
   fi' HEAD
+
+exit 0
