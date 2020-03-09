@@ -5,23 +5,24 @@
 
 # @function Show the usage of the script
 showUsage() {
+    echo -e "\nUsage: $0 -s [REPO-URL] -d [DIRECTORY] -b [BRANCH] -t [NEW-REPO-URL]"
+    echo -e "\nAutomatically extract a (sub-)directory with all its commits from a git repository."
+    echo -e "\nARGUMENTS"
+	echo -e "  -h, --help \t\t Display this help and exit"
+    echo -e "  -s, --source \t\t The remote address of the source repository."
+    echo -e "  -d, --directory \t The name of the directory to be extracted."
+    echo -e "  -b, --branch \t\t (OPTIONAL) The name of the branch to extract the subdirectory from."
+    echo -e "  -t, --target \t\t (OPTIONAL) The remote address for the target repository. Should be the path to an empty git repository!"
+    echo -e "\nEXAMPLES"
+    echo "1) Extract the folder \"git\" from the helpers repository: "
+    echo -e "  $0 -s https://github.com/nightsparc/helpers -d git - "
+    echo -e "\n2) Extract the folder \"git\" from the helpers repository and push it to git-helpers."
+    echo -e "  $0 -s https://github.com/nightsparc/helpers -d git -t https://github.com/nightsparc/git-helpers"
+
     echo ""
-    echo -e "Usage: $0 [REPO-URL] [DIRECTORY] [BRANCH] [NEW-REPO-URL]"
-    echo ""
-    echo -e "Automatically extract a (sub-)directory with all its commits from a git repository."
-    echo ""
-    echo "REPO-URL:       The remote address of the source repository."
-    echo "DIRECTORY-NAME: The name of the directory to be extracted."
-    echo "BRANCH:         (OPTIONAL) The name of the branch to extract the subdirectory from."
-    echo "NEW-REPO-URL:   (OPTIONAL) The remote address for the target repository. Should be the path to an empty git repository!"
 }
 
-# If not enough parameters are given, show help
-if [ $# -le 1 ]; then
-    echo "Not enough arguments given..."
-	showUsage
-	exit 1
-fi
+
 
 # From: http://stackoverflow.com/a/24501190/1267320
 # Code template for parsing command line parameters using only portable shell
@@ -50,8 +51,20 @@ while [ -n "$1" ]; do
                             #;;
                         # and --flag value opts like this
                         # Anything unknown is recorded for later
-                        -h* |  --help )
+                        -h* | --help )
                             HELP=true
+                            ;;
+                        -s* | --source )
+                            SOURCE_REPO=$2
+                            ;;
+                        -d* | --directory )
+                            EXTRACT_DIR_NAME=$2
+                            ;;
+                        -b* | --branch )
+                            BRANCH=$2
+                            ;;
+                        -t* | --target )
+                            TARGET_REPO=$2
                             ;;
                         * )
                             REMAINS="$REMAINS \"$OPT\""
@@ -73,12 +86,11 @@ done
 # Set the non-parameters back into the positional parameters ($1 $2 ..)
 eval set -- $REMAINS
 
-SOURCE_REPO=$1
-SOURCE_DIR=${1##*/} # extracts the basedir name of the repository address
-EXTRACT_DIR_NAME=$2
+# Set some variables as shortcuts
+SOURCE_DIR=${SOURCE_REPO##*/} # extracts the basedir name of the repository address
+SOURCE_DIR_ORIG=$SOURCE_DIR.orig
 EXTRACT_DIR_NAME_CLEAN=$EXTRACT_DIR_NAME.clean
-BRANCH=${3:-master} # defaults to master if $3 is either unset or empty string
-TARGET_REPO=$4
+BRANCH=${BRANCH:-master} # defaults to master if BRANCH is either unset or empty string
 
 # analyse parameter
 if [[ $HELP == true ]] ; then
@@ -86,9 +98,25 @@ if [[ $HELP == true ]] ; then
 	exit 0
 
 else
+
+    if [ -z $SOURCE_REPO ] ; then
+        echo "Missing source repo argument! See help with --help!"
+        exit 1
+    fi
+
+    if [ -z $EXTRACT_DIR_NAME ] ; then
+        echo "Missing directory argument! See help with --help!"
+        exit 1
+    fi
+
     echo "Cloning branch \"$BRANCH\" of $SOURCE_REPO to $SOURCE_DIR for extraction of directory \"$EXTRACT_DIR_NAME\""
     sleep 1
-    git clone -b $BRANCH $SOURCE_REPO $SOURCE_DIR
+    if [[ ! -d $SOURCE_DIR_ORIG ]] ; then
+        git clone -b $BRANCH $SOURCE_REPO $SOURCE_DIR_ORIG
+    else
+        [[ -d $SOURCE_DIR ]] && rm -rf $SOURCE_DIR
+    fi
+    cp -r $SOURCE_DIR.orig $SOURCE_DIR
     cd $SOURCE_DIR
     # Delete origin to avoid accidential remote operations
     git remote rm origin
@@ -104,8 +132,8 @@ else
     git clone --single-branch --branch $BRANCH file://$PWD/$SOURCE_DIR $EXTRACT_DIR_NAME_CLEAN
 
     # (OPTIONAL) push cleaned repository to remote if remote was given
-    if [ ! -z "$TARGET_REPO" ] ; then
-        echo "Target remote address given: $TARGET_REPO. Adding as origin to \"EXTRACT_DIR_NAME_CLEAN\" and pushing repository to remote."
+    if [ ! -z $TARGET_REPO ] ; then
+        echo "Target remote address given: $TARGET_REPO. Adding as origin to \"$EXTRACT_DIR_NAME_CLEAN\" and pushing repository to remote."
         sleep 1
         cd $EXTRACT_DIR_NAME_CLEAN
         git remote set-url origin $TARGET_REPO
