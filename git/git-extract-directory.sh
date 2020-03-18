@@ -22,8 +22,6 @@ showUsage() {
     echo ""
 }
 
-
-
 # From: http://stackoverflow.com/a/24501190/1267320
 # Code template for parsing command line parameters using only portable shell
 # code, while handling both long and short params, handling '-f file' and
@@ -127,7 +125,7 @@ else
     # `-- --all` - Use the current
     git filter-branch --prune-empty --subdirectory-filter $EXTRACT_DIR_NAME -- --all
     cd ..
-    echo "Cloning stripped repository to Cleaning repository now."
+    echo "Cloning stripped repository to clean repository now."
     sleep 1
     git clone --single-branch --branch $BRANCH file://$PWD/$SOURCE_DIR $EXTRACT_DIR_NAME_CLEAN
 
