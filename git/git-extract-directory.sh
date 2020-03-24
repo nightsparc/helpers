@@ -1,6 +1,5 @@
 #!/bin/bash
-
-# @date 2019-02-28
+# @date 2020-02-28
 # @brief Short script to automatically extract a (sub-)directory with all its commits from a git repository.
 
 # @function Show the usage of the script
@@ -71,7 +70,7 @@ while [ -n "$1" ]; do
                 esac
                 # Check for multiple short options
                 # NOTICE: be sure to update this pattern to match valid options
-                NEXTOPT="${OPT#-[brcdiuh]}" # try removing single short opt
+                NEXTOPT="${OPT#-[bdhst]}" # try removing single short opt
                 if [ x"$OPT" != x"$NEXTOPT" ] ; then
                         OPT="-$NEXTOPT"  # multiple short opts, keep going
                 else
@@ -139,3 +138,5 @@ else
         git push --tags
     fi
 fi
+
+exit 0
