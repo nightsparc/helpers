@@ -85,6 +85,7 @@ eval set -- $REMAINS
 
 # Set some variables as shortcuts
 SOURCE_DIR=${SOURCE_REPO##*/} # extracts the basedir name of the repository address
+WORK_DIR=$SOURCE_DIR.tmp
 SOURCE_DIR_ORIG=$SOURCE_DIR.orig
 EXTRACT_DIR_NAME_CLEAN=$EXTRACT_DIR_NAME.clean
 BRANCH=${BRANCH:-master} # defaults to master if BRANCH is either unset or empty string
@@ -106,15 +107,23 @@ else
         exit 1
     fi
 
-    echo "Cloning branch \"$BRANCH\" of $SOURCE_REPO to $SOURCE_DIR for extraction of directory \"$EXTRACT_DIR_NAME\""
-    sleep 1
     if [[ ! -d $SOURCE_DIR_ORIG ]] ; then
+        echo "Cloning branch \"$BRANCH\" of $SOURCE_REPO to $SOURCE_DIR_ORIG for extraction of directory \"$EXTRACT_DIR_NAME\""
         git clone -b $BRANCH $SOURCE_REPO $SOURCE_DIR_ORIG
     else
-        [[ -d $SOURCE_DIR ]] && rm -rf $SOURCE_DIR
+
+        if [[ -d $WORK_DIR ]]; then
+            echo "Working directory from prior extracting exists. Deleting it to avoid conclicts..."
+            rm -rf $WORK_DIR
+        fi
+        cd $SOURCE_DIR_ORIG
+        echo "Resetting source directory $SOURCE_DIR_ORIG"
+        git reset --hard
+        cd ..
     fi
-    cp -r $SOURCE_DIR.orig $SOURCE_DIR
-    cd $SOURCE_DIR
+    echo "Copying source directory $SOURCE_DIR_ORIG to work dir $WORK_DIR"
+    cp -r $SOURCE_DIR_ORIG $WORK_DIR
+    cd $WORK_DIR
     # Delete origin to avoid accidential remote operations
     git remote rm origin
     # http://gbayer.com/development/moving-files-from-one-git-repository-to-another-preserving-history/
@@ -126,7 +135,7 @@ else
     cd ..
     echo "Cloning stripped repository to clean repository now."
     sleep 1
-    git clone --single-branch --branch $BRANCH file://$PWD/$SOURCE_DIR $EXTRACT_DIR_NAME_CLEAN
+    git clone --single-branch --branch $BRANCH file://$PWD/$WORK_DIR $EXTRACT_DIR_NAME_CLEAN
 
     # (OPTIONAL) push cleaned repository to remote if remote was given
     if [ ! -z $TARGET_REPO ] ; then
