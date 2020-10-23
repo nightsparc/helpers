@@ -1,0 +1,3 @@
+[submodule "3rdparty/git-filter-repo"]
+	path = 3rdparty/git-filter-repo
+	url = git@github.com:newren/git-filter-repo.git
