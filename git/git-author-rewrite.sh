@@ -10,11 +10,11 @@ showUsage() {
     echo ""
     echo -e "Usage: $0 [OLD-EMAIL] [NEW-NAME] [NEW-EMAIL]"
     echo ""
-    echo -e "Automatically change all commit names and email addresses to anonymize git repos."
+    echo -e "Automatically change all commit names and email addresses to a new name<email>."
     echo ""
     echo "OLD-EMAIL:  The email-address to be removed."
-    echo "NEW-NAME:   The new name/ID for the commits after anonymization."
-    echo "NEW-EMAIL:  The new email-address for the commits after anonymization."
+    echo "NEW-NAME:   The new name/ID for the commits after rewrite."
+    echo "NEW-EMAIL:  The new email-address for the commits after rewrite."
 }
 
 # If not enough parameters are given, show help
@@ -36,15 +36,22 @@ echo "New mail: $CORRECT_EMAIL"
 echo "Starting conversion in 1 sec..."
 sleep 1
 
-git filter-branch --env-filter "
-if [ \$GIT_COMMITTER_EMAIL = '$OLD_EMAIL' ]
-then
-    export GIT_COMMITTER_NAME='$CORRECT_NAME'
-    export GIT_COMMITTER_EMAIL='$CORRECT_EMAIL'
-fi
-if [ \$GIT_AUTHOR_EMAIL = '$OLD_EMAIL' ]
-then
-    export GIT_AUTHOR_NAME='$CORRECT_NAME'
-    export GIT_AUTHOR_EMAIL='$CORRECT_EMAIL'
-fi
-" --tag-name-filter cat -- --branches --tags
+# git filter-branch --env-filter "
+# if [ \$GIT_COMMITTER_EMAIL = '$OLD_EMAIL' ]
+# then
+#     export GIT_COMMITTER_NAME='$CORRECT_NAME'
+#     export GIT_COMMITTER_EMAIL='$CORRECT_EMAIL'
+# fi
+# if [ \$GIT_AUTHOR_EMAIL = '$OLD_EMAIL' ]
+# then
+#     export GIT_AUTHOR_NAME='$CORRECT_NAME'
+#     export GIT_AUTHOR_EMAIL='$CORRECT_EMAIL'
+# fi
+# " --tag-name-filter cat -- --branches --tags
+
+git-filter-repo --commit-callback "
+    commit.author_name = b\"$CORRECT_NAME\"
+    commit.committer_name = b\"$CORRECT_NAME\"
+    commit.author_email = b\"$CORRECT_EMAIL\"
+    commit.committer_email = b\"$CORRECT_EMAIL\"
+    "
