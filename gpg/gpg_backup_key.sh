@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # @author nightsparc
 # @date 2019-06-14
-# @brief Create a full backup of the desired gpg2 key
+# @brief Create a full backup of the desired GPG key
 # @details
 # The script creats a full backuf of the specified key.
 # A full backup includes:
@@ -15,10 +15,10 @@
 KEY2EXPORT=$1
 
 # Generate backup copy of revocation certificate
-gpg2 --output Widerrufszertifikat_GnuPG-Key_0x$KEY2EXPORT.rev --gen-revoke $KEY2EXPORT
+gpg --output Widerrufszertifikat_GnuPG-Key_0x$KEY2EXPORT.rev --gen-revoke $KEY2EXPORT
 # Export public master key
-gpg2 --export --armor $KEY2EXPORT > GnuPG-Key_0x$KEY2EXPORT.pub.asc
+gpg --export --armor $KEY2EXPORT > GnuPG-Key_0x$KEY2EXPORT.pub.asc
 # Export private master key
-gpg2 --export-secret-keys --armor $KEY2EXPORT > GnuPG-Key_0x$KEY2EXPORT.MASTER.priv.asc
+gpg --export-secret-keys --armor $KEY2EXPORT > GnuPG-Key_0x$KEY2EXPORT.MASTER.priv.asc
 # Export private subkeys. There are no public subkeys.
-gpg2 --export-secret-subkeys --armor $KEY2EXPORT > GnuPG-Key_0x$KEY2EXPORT.SUB.priv.asc
+gpg --export-secret-subkeys --armor $KEY2EXPORT > GnuPG-Key_0x$KEY2EXPORT.SUB.priv.asc
