@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# @author ***REMOVED*** Schmitt
+# @author nightsparc
 # @date 2015-06-20
 # @brief Scripit to automatically update all svn repos in the directory.
 
 # Loop through all files in $PWD
-for f in *; 
+for f in *;
 do
-	if [[ -d $f ]]; 
+	if [[ -d $f ]];
 	then
 		cd $f ;
 		if [[ -d .svn  ]]

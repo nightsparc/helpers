@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# @author ***REMOVED*** Schmitt
+# @author nightsparc
 # @date 2016-04-05
 # @brief Script to automatically check the status of svn repos in the directory.
 # @ref http://askubuntu.com/questions/60837/record-a-programs-output-with-pulseaudio
