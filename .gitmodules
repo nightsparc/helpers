@@ -1,3 +1,6 @@
 [submodule "3rdparty/git-filter-repo"]
 	path = 3rdparty/git-filter-repo
 	url = git@github.com:newren/git-filter-repo.git
+[submodule "systemd/update-systemd-resolved"]
+	path = systemd/update-systemd-resolved
+	url = https://github.com/jonathanio/update-systemd-resolved
