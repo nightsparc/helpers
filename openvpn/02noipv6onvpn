@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# Script to disable IPv6 during VPN-connections
+# Place in /etc/openvpn/scripts
+
+SCRIPT_NAME="${BASH_SOURCE[0]##*/}"
+
+log() {
+  logger -s -t "$SCRIPT_NAME" "$@"
+}
+
+for level in info; do
+  printf -v functext -- '%s() { log -p user.%s -- "$@" ; }' "$level" "$level"
+  eval "$functext"
+done
+
+process_ipv6(){
+	if [ "$1" = "up" ]; then
+		info "Disabling IPv6 connectivity."
+		sysctl -w net.ipv6.conf.all.disable_ipv6=1
+	fi
+	if [ "$1" = "down" ]; then
+		info "Reenabling IPv6 connectivity."
+		sysctl -w net.ipv6.conf.all.disable_ipv6=0
+		info "Restarting NetworkManager"
+		systemctl restart NetworkManager
+	fi
+}
+
+main() {
+	local script_type="${1}"
+	
+	if [[ -z "$script_type" ]]; then
+		usage 'No script type specified'
+		return 1
+	fi
+	
+	process_ipv6 "$script_type" || return 1
+}
+
+if [[ "${BASH_SOURCE[0]}" == "$0" ]] || [[ "$AUTOMATED_TESTING" == 1 ]]; then
+	set -o nounset
+	main "${script_type:-down}" "$@"
+fi

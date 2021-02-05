@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# Script to force ipv4 when connected via VPN
+
+SCRIPT_NAME="${BASH_SOURCE[0]##*/}"
+
+log() {
+  logger -s -t "$SCRIPT_NAME" "$@"
+}
+
+for level in info; do
+  printf -v functext -- '%s() { log -p user.%s -- "$@" ; }' "$level" "$level"
+  eval "$functext"
+done
+
+info "Enforcing IPv4 for all interfaces now..."
+
+/etc/openvpn/scripts/02noipv6onvpn "$1"
+/etc/openvpn/scripts/update-systemd-resolved "$1" "$2"
