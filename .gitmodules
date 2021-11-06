@@ -4,3 +4,6 @@
 [submodule "systemd/update-systemd-resolved"]
 	path = systemd/update-systemd-resolved
 	url = https://github.com/jonathanio/update-systemd-resolved
+[submodule "3rdparty/bashmount"]
+	path = 3rdparty/bashmount
+	url = https://github.com/jamielinux/bashmount
