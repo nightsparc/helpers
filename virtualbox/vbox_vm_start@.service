@@ -1,0 +1,23 @@
+[Unit]
+Description=VirtualBox VM %I
+After=network.target vboxdrv.service
+Before=runlevel2.target shutdown.target
+
+[Service]
+## Add user/group in case the service should be run by the root daemon
+#User=USER
+#Group=vboxusers
+Type=forking
+Restart=no
+TimeoutSec=5min
+IgnoreSIGPIPE=no
+KillMode=process
+GuessMainPID=no
+RemainAfterExit=yes
+
+ExecStart=/usr/bin/VBoxManage startvm %i --type headless
+#ExecStart=/usr/bin/VBoxManage startvm %i
+ExecStop=/usr/bin/VBoxManage controlvm %i acpipowerbutton
+
+[Install]
+WantedBy=multi-user.target
