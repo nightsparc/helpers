@@ -7,7 +7,7 @@ set -e
 # Description:
 #   This script mounts a Linux installation from a USB device and chroots into it.
 #   Assumes EFI on partition 1, /boot on partition 2, and root (/) on partition 3.
-#   It sets up /dev, /proc, /sys, /run to enable a fully functional chroot.
+#   It sets up /dev, /dev/pts, /proc, /sys, /run to enable a fully functional chroot.
 #
 #   By default, it automatically unmounts everything after you exit the chroot.
 #   You can disable this with --no-cleanup or manually trigger unmounting with --cleanup.
@@ -31,8 +31,10 @@ Description:
     - root (/) on <device>3
 
   Automatically mounts necessary filesystems:
-    - /dev, /proc, /sys, /run
-  Automatically unmounts them when you exit the chroot (unless disabled).
+    - /dev, /dev/pts, /proc, /sys, /run
+  Mounts are made private to prevent propagation to the host.
+
+  Automatically unmounts everything when you exit the chroot (unless disabled).
 
 Options:
   -d, --device       Block device to mount (e.g., /dev/sda)
@@ -48,7 +50,7 @@ EOF
     exit 0
 }
 
-# Early help handling
+# Early help
 for arg in "$@"; do
     if [[ "$arg" == "--help" ]]; then
         show_help
@@ -61,7 +63,7 @@ if [ "$EUID" -ne 0 ]; then
     exit 1
 fi
 
-# Parse arguments
+# Parse args
 DEVICE=""
 CLEANUP=0
 AUTO_CLEANUP=1
@@ -89,13 +91,14 @@ done
 
 do_cleanup() {
     echo "Unmounting..."
-    umount -l $MOUNTPOINT/run || true
-    umount -l $MOUNTPOINT/dev || true
-    umount -l $MOUNTPOINT/proc || true
-    umount -l $MOUNTPOINT/sys || true
+    umount -l $MOUNTPOINT/dev/pts || true
+    umount -l $MOUNTPOINT/run     || true
+    umount -l $MOUNTPOINT/dev     || true
+    umount -l $MOUNTPOINT/proc    || true
+    umount -l $MOUNTPOINT/sys     || true
     umount -l $MOUNTPOINT/boot/efi || true
-    umount -l $MOUNTPOINT/boot || true
-    umount -l $MOUNTPOINT || true
+    umount -l $MOUNTPOINT/boot    || true
+    umount -l $MOUNTPOINT         || true
     echo "Cleanup done."
 }
 
@@ -120,16 +123,22 @@ for part in "$PART_EFI" "$PART_BOOT" "$PART_ROOT"; do
     fi
 done
 
-# Mount everything
+# Mount root and isolate
 mount "$PART_ROOT" $MOUNTPOINT
+mount --make-private $MOUNTPOINT
+
+# Mount other partitions
 mount "$PART_BOOT" $MOUNTPOINT/boot
 mount "$PART_EFI" $MOUNTPOINT/boot/efi
+
+# Virtual FS
 mount --bind /dev $MOUNTPOINT/dev
+mount --bind /dev/pts $MOUNTPOINT/dev/pts
 mount --bind /proc $MOUNTPOINT/proc
 mount --bind /sys $MOUNTPOINT/sys
 mount --bind /run $MOUNTPOINT/run
 
-# Auto-cleanup unless disabled
+# Enable auto-cleanup unless disabled
 if [ "$AUTO_CLEANUP" -eq 1 ]; then
     trap do_cleanup EXIT
 fi
