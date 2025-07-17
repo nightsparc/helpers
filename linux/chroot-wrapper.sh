@@ -136,6 +136,7 @@ mount --bind /dev $MOUNTPOINT/dev
 mount --bind /dev/pts $MOUNTPOINT/dev/pts
 mount --bind /proc $MOUNTPOINT/proc
 mount --bind /sys $MOUNTPOINT/sys
+mount --bind /sys/firmware/efi/efivars $MOUNTPOINT/sys/firmware/efi/efivars
 mount --bind /run $MOUNTPOINT/run
 
 # Enable auto-cleanup unless disabled
