@@ -7,7 +7,15 @@ if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     exit 1
 fi
 
-find . -type d ! -path '*/.git/*' | while read -r dir; do
+# Check for parameter
+TARGET_DIR="${1:-.}"
+
+if [ ! -d "$TARGET_DIR" ]; then
+    echo "Error: $TARGET_DIR is not a valid directory."
+    exit 1
+fi
+
+find "$TARGET_DIR" -type d ! -path '*/.git/*' | while read -r dir; do
     # skip if dir has contents (anything except .gitkeep)
     if [ "$(find "$dir" -mindepth 1 -not -name '.gitkeep' | head -n1)" ]; then
         continue
