@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# Work around GNOME Wayland screenshot portal restrictions when the capture is
+# started from a global media key. Running the capture through a shell/pty is
+# more reliable than calling Flameshot or its D-Bus method directly.
+
+set -euo pipefail
+
+if [[ "${XDG_SESSION_TYPE:-}" == "wayland" ]]; then
+  exec script --quiet --return --command "QT_QPA_PLATFORM=wayland flameshot gui" /dev/null
+fi
+
+exec flameshot gui
