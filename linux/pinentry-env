@@ -1,0 +1,35 @@
+#!/bin/bash
+# Choose pinentry depending on PINENTRY_USER_DATA and current session context.
+# This wrapper prefers a GNOME-native dialog for desktop sessions and falls
+# back to terminal variants for headless or TTY-only environments.
+
+pick_default_pinentry() {
+  if [[ -n "${WAYLAND_DISPLAY:-}" || -n "${DISPLAY:-}" ]]; then
+    echo "gnome3"
+  else
+    echo "curses"
+  fi
+}
+
+PINENTRY_BACKEND="${PINENTRY_USER_DATA:-$(pick_default_pinentry)}"
+
+case "$PINENTRY_BACKEND" in
+gtk2)
+  exec /usr/bin/pinentry-gtk-2 "$@"
+  ;;
+gnome3)
+  exec /usr/bin/pinentry-gnome3 "$@"
+  ;;
+qt)
+  exec /usr/bin/pinentry-qt "$@"
+  ;;
+curses)
+  exec /usr/bin/pinentry-curses "$@"
+  ;;
+tty)
+  exec /usr/bin/pinentry-tty "$@"
+  ;;
+*)
+  exec /usr/bin/pinentry-gnome3 "$@"
+  ;;
+esac
